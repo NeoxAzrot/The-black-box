@@ -1,0 +1,12 @@
+{
+  "name": "The-black-box",
+  "displayName": "The-black-box",
+  "expo": {
+    "name": "The-black-box",
+    "slug": "The-black-box",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
