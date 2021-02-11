@@ -3,37 +3,9 @@ import React, { useState, useEffect } from 'react'
 import { StyleSheet, View, Text } from 'react-native'
 import { Accelerometer } from 'expo-sensors'
 import Ball from './components/Ball'
-import { SCREEN_HEIGHT, SCREEN_WIDTH, BALL_SIZE, BALL_RAYON, NUMBER_OF_BALLS, GRAVITY } from './helpers/utils'
+import { SCREEN_HEIGHT, SCREEN_WIDTH, BALL_SIZE, BALL_RAYON, NUMBER_OF_BALLS } from './helpers/utils'
 
 const App = () => {
-  // Position of one ball
-  const [ballTop, setBallTop] = useState(SCREEN_HEIGHT - BALL_SIZE * 2)
-  const [ballLeft, setBallLeft] = useState(SCREEN_WIDTH / 2 - BALL_RAYON)
-
-  // Array with all my balls
-  let balls = []
-  let gameTimerId
-
-  for (let i = 0; i < NUMBER_OF_BALLS; i++) {
-    const ball = <Ball 
-      key={i}
-      size={BALL_SIZE}
-      top={ballTop - (BALL_SIZE + BALL_RAYON) * i}
-      left={ballLeft}
-      borderRadius={BALL_RAYON}
-    />
-
-    balls.push(ball)
-  }
-
-  useEffect(() => {
-    gameTimerId = setInterval(() => {
-      for (let i = 0; i < NUMBER_OF_BALLS; i++) {
-        setBallTop(ballTop => ballTop + GRAVITY)
-      }
-    }, 1)
-  }, [ballTop])
-
   // Function for accelerometer
   Accelerometer.setUpdateInterval(15)
 
@@ -63,6 +35,22 @@ const App = () => {
   }, [])
 
   const { x, y, z } = data
+  
+  // Array with all my balls
+  let balls = []
+
+  for (let i = 0; i < NUMBER_OF_BALLS; i++) {
+    const ball = <Ball 
+      key={i}
+      size={BALL_SIZE}
+      top={(SCREEN_HEIGHT - BALL_SIZE * 2) - (BALL_SIZE + BALL_RAYON) * i}
+      left={SCREEN_WIDTH / 2 - BALL_RAYON}
+      borderRadius={BALL_RAYON}
+      data={{x, y, z}}
+    />
+
+    balls.push(ball)
+  }
 
   return (
     <View style={styles.container}>
