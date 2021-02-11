@@ -1,11 +1,15 @@
 import { StatusBar } from 'expo-status-bar'
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, View, Text } from 'react-native'
+import { StyleSheet, View, Vibration } from 'react-native'
 import { Accelerometer } from 'expo-sensors'
 import Ball from './components/Ball'
-import { SCREEN_HEIGHT, SCREEN_WIDTH, BALL_SIZE, BALL_RAYON, NUMBER_OF_BALLS } from './helpers/utils'
+import { SCREEN_HEIGHT, SCREEN_WIDTH, BALL_SIZE, BALL_RAYON, NUMBER_OF_BALLS, GRAVITY } from './helpers/utils'
 
 const App = () => {
+  // Position of a ball
+  const [ballTop, setBallTop] = useState(SCREEN_HEIGHT / 2 - BALL_RAYON)
+  const [ballLeft, setBallLeft] = useState(SCREEN_WIDTH / 2 - BALL_RAYON)
+
   // Function for accelerometer
   Accelerometer.setUpdateInterval(15)
 
@@ -43,20 +47,46 @@ const App = () => {
     const ball = <Ball 
       key={i}
       size={BALL_SIZE}
-      top={(SCREEN_HEIGHT - BALL_SIZE * 2) - (BALL_SIZE + BALL_RAYON) * i}
-      left={SCREEN_WIDTH / 2 - BALL_RAYON}
+      left={ballLeft}
+      top={ballTop}
       borderRadius={BALL_RAYON}
-      data={{x, y, z}}
     />
 
     balls.push(ball)
   }
 
+  useEffect(() => {
+    if(ballTop < SCREEN_HEIGHT - BALL_SIZE && ballTop > 0 && ballLeft < SCREEN_WIDTH - BALL_SIZE && ballLeft > 0) {
+      const interval = setInterval(() => {
+        setBallTop(ballTop => ballTop - round(y) * GRAVITY)
+        setBallLeft(ballLeft => ballLeft + round(x) * GRAVITY)
+      }, 3)
+  
+      return () => clearInterval(interval)
+    }
+
+    if(ballTop <= 0) {
+      setBallTop(1)
+      Vibration.vibrate()
+    }
+    if(ballTop >= SCREEN_HEIGHT - BALL_SIZE) {
+      setBallTop(SCREEN_HEIGHT - BALL_SIZE - 1)
+      Vibration.vibrate()
+    }
+    if(ballLeft <= 0) {
+      setBallLeft(1)
+      Vibration.vibrate()
+    }
+    if(ballLeft >= SCREEN_WIDTH - BALL_SIZE) {
+      setBallLeft(SCREEN_WIDTH - BALL_SIZE - 1)
+      Vibration.vibrate()
+    }
+  }, [ballTop, ballLeft])
+
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       {balls}
-      <Text>x: {round(x)} y: {round(y)} z: {round(z)}</Text>
     </View>
   )
 }
@@ -70,8 +100,7 @@ const round = (n) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
-    marginTop: 20
+    backgroundColor: '#fff'
   },
 })
 
