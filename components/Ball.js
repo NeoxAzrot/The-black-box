@@ -2,8 +2,10 @@ import React from 'react'
 import { View } from 'react-native'
 
 const Ball = ( props ) => {
+  // Toutes les props de la balle
   const { size, top, left, borderRadius } = props
 
+  // On affiche la view
   return (
     <View style={{
       position: 'absolute',
