@@ -1,11 +1,13 @@
 import { StatusBar } from 'expo-status-bar'
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, View, Vibration } from 'react-native'
+import { StyleSheet, View, Vibration, Text } from 'react-native'
 import { Accelerometer } from 'expo-sensors'
 import Ball from './components/Ball'
 import { SCREEN_HEIGHT, SCREEN_WIDTH, BALL_SIZE, BALL_RAYON, NUMBER_OF_BALLS, GRAVITY } from './helpers/utils'
 
 const App = () => {
+  const [timer, setTimer] = useState(0)
+
   // Position of a ball
   const [ballTop, setBallTop] = useState(SCREEN_HEIGHT / 2 - BALL_RAYON)
   const [ballLeft, setBallLeft] = useState(SCREEN_WIDTH / 2 - BALL_RAYON)
@@ -39,7 +41,7 @@ const App = () => {
   }, [])
 
   const { x, y, z } = data
-  
+
   // Array with all my balls
   let balls = []
 
@@ -83,9 +85,16 @@ const App = () => {
     }
   }, [ballTop, ballLeft])
 
+  useEffect(() => {
+    setInterval(() => {
+      setTimer(timer => timer + 1)
+    }, 1000)
+  }, [])
+
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
+      <Text>Temps écoulé : {timer}s</Text>
       {balls}
     </View>
   )
@@ -100,7 +109,9 @@ const round = (n) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
 })
 
